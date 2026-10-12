@@ -1,0 +1,5 @@
+[
+  {"topic_id": 1, "topic": "Lua basics: chunks, comments, variables, types"},
+  {"topic_id": 2, "topic": "Loops and conditionals: if, while, repeat, for"},
+  {"topic_id": 3, "topic": "Tables: arrays, dictionaries, iteration"}
+]

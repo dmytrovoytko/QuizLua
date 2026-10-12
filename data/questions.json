@@ -1,0 +1,452 @@
+[
+  {
+    "qid": "101",
+    "topic_id": 1,
+    "question": "How do you write a single-line comment in Lua? (Python uses #)",
+    "code": "-- this is a comment\n-- print(\"hi\")",
+    "options": [
+      "# this is a comment",
+      "-- this is a comment",
+      "// this is a comment",
+      "<!-- this is a comment -->"
+    ],
+    "answer": 1,
+    "explanation": "Lua uses -- for single-line comments, --[[ ... ]] for blocks. # is length operator in Lua, not a comment. You will see -- everywhere in init.lua.",
+    "difficulty": "simple"
+  },
+  {
+    "qid": "102",
+    "topic_id": 1,
+    "question": "What is the difference between `x = 10` and `local x = 10` at top level of a file?",
+    "code": "x = 10        -- version A\nlocal y = 10  -- version B",
+    "options": [
+      "No difference, both are local to the file",
+      "A creates a global (_G.x), B creates a chunk-local variable",
+      "A is an error, all variables must be local",
+      "B creates a global, A creates a local"
+    ],
+    "answer": 1,
+    "explanation": "Without local you pollute _G. In Neovim config always use local (e.g. local opt = vim.opt) unless you intentionally want a global.",
+    "difficulty": "simple"
+  },
+  {
+    "qid": "103",
+    "topic_id": 1,
+    "question": "How do you concatenate strings in Lua? (Python uses +)",
+    "code": "local a = \"hello\"\nlocal b = \"world\"\nprint(a .. \" \" .. b)",
+    "options": [
+      "a + \" \" + b",
+      "a .. \" \" .. b",
+      "concat(a, b)",
+      "a . \" \" . b"
+    ],
+    "answer": 1,
+    "explanation": ".. is concat. + is arithmetic only (it even coerces strings: \"5\" + 1 == 6). Using + for strings is a classic Python-trap.",
+    "difficulty": "simple"
+  },
+  {
+    "qid": "104",
+    "topic_id": 1,
+    "question": "What happens when you read an undeclared variable in Lua? Compare to Python.",
+    "code": "print(foo)  -- foo was never assigned",
+    "options": [
+      "NameError like in Python",
+      "Prints nil, no error",
+      "Syntax error at load time",
+      "Prints empty string \"\""
+    ],
+    "answer": 1,
+    "explanation": "Undeclared access returns nil, it does not raise. This is why typos in init.lua silently do nothing (e.g. vim.opt.nubmer). Use `print(vim.inspect(x))` to debug.",
+    "difficulty": "intermediate"
+  },
+  {
+    "qid": "105",
+    "topic_id": 1,
+    "question": "What does type({}) return in Lua?",
+    "code": "print(type({}))\nprint(type(nil))\nprint(type(\"hi\"))",
+    "options": [
+      "\"dict\"",
+      "\"table\"",
+      "\"object\"",
+      "\"list\""
+    ],
+    "answer": 1,
+    "explanation": "Lua has 8 basic types: nil, boolean, number, string, function, userdata, thread, table. {} is always a table \u2014 it serves as array, dict, and object.",
+    "difficulty": "simple"
+  },
+  {
+    "qid": "106",
+    "topic_id": 1,
+    "question": "What does this print? Remember Python is 0-based.",
+    "code": "local t = {\"a\", \"b\", \"c\"}\nprint(t[1])\nprint(t[0])",
+    "options": [
+      "\"a\" then \"a\"",
+      "\"b\" then \"a\"",
+      "\"a\" then \"nil\"",
+      "Error: index out of range"
+    ],
+    "answer": 2,
+    "explanation": "Lua arrays are 1-based by convention. t[1] is first element, t[0] is nil (not an error). Neovim APIs follow this.",
+    "difficulty": "intermediate"
+  },
+  {
+    "qid": "107",
+    "topic_id": 1,
+    "question": "What does the # operator do?",
+    "code": "print(#\"hello\")\nprint(#{1, 2, 3})",
+    "options": [
+      "Comment marker, prints nothing",
+      "Length: 5 then 3",
+      "Length: 4 then 2 (0-based count)",
+      "Stringify the value"
+    ],
+    "answer": 1,
+    "explanation": "# gives length for strings and sequence tables. Careful: #{1,2,nil,4} with holes is undefined \u2014 keep sequences gap-free.",
+    "difficulty": "intermediate"
+  },
+  {
+    "qid": "108",
+    "topic_id": 1,
+    "question": "Which values are falsy in an if condition in Lua? (Python: False, None, 0, \"\", [], {})",
+    "code": "if 0 then print(\"0 is truthy\") end\nif \"\" then print(\"empty string is truthy\") end\nif nil then print(\"nil is truthy\") end",
+    "options": [
+      "Only nil and false are falsy; 0 and \"\" are truthy",
+      "Same as Python: false, nil, 0 and \"\" are falsy",
+      "Only false is falsy, even nil is truthy",
+      "Everything except nil is truthy, including false"
+    ],
+    "answer": 0,
+    "explanation": "Only nil and false are falsy. 0 and \"\" are truthy \u2014 opposite of Python. So `if vim.g.my_flag then` with my_flag=0 still runs.",
+    "difficulty": "advanced"
+  },
+  {
+    "qid": "109",
+    "topic_id": 1,
+    "question": "How do you test for inequality in Lua? (Python uses !=)",
+    "code": "if vim.fn.has(\"nvim-0.9\") ~= 1 then\n  print(\"too old\")\nend",
+    "options": [
+      "!=",
+      "<>",
+      "~=",
+      "=!"
+    ],
+    "answer": 2,
+    "explanation": "~= is not-equal. != is a syntax error in Lua and breaks init.lua on startup. You will see ~= in version checks and option guards.",
+    "difficulty": "intermediate"
+  },
+  {
+    "qid": "110",
+    "topic_id": 1,
+    "question": "What does this swap idiom do? (Familiar from Python)",
+    "code": "local a, b = 1, 2\na, b = b, a\nprint(a, b)",
+    "options": [
+      "Prints 1 2 (no swap, needs temp var)",
+      "Prints 2 1 (parallel assignment swaps)",
+      "Error: multiple assignment not allowed",
+      "Prints 2 2 (b assigned twice)"
+    ],
+    "answer": 1,
+    "explanation": "Like Python, Lua evaluates right side first then assigns left to right, so a,b = b,a swaps with no temp. Used a lot for M.fn = M.fn patterns.",
+    "difficulty": "advanced"
+  },
+  {
+    "qid": "201",
+    "topic_id": 2,
+    "question": "Which if statement is valid Lua? (Python uses colons and indentation)",
+    "code": "-- pick the one that loads",
+    "options": [
+      "if (x > 0): print(\"pos\")",
+      "if x > 0 then print(\"pos\") end",
+      "if x > 0 { print(\"pos\") }",
+      "if x > 0 do print(\"pos\")"
+    ],
+    "answer": 1,
+    "explanation": "Lua needs then + end, no parens or colon required. Missing end gives 'end expected' and Neovim won't start.",
+    "difficulty": "simple"
+  },
+  {
+    "qid": "202",
+    "topic_id": 2,
+    "question": "How do you write an else-if branch in Lua? (Python: elif)",
+    "code": "if a then print(1)\nelseif b then print(2)\nelse print(3)\nend",
+    "options": [
+      "elif b then",
+      "else if b then",
+      "elseif b then",
+      "elsif b then"
+    ],
+    "answer": 2,
+    "explanation": "elseif is one word. else if parses as a nested if needing a second end — a common init.lua syntax error.",
+    "difficulty": "simple"
+  },
+  {
+    "qid": "203",
+    "topic_id": 2,
+    "question": "Which while loop is valid Lua?",
+    "code": "local n = 3\nwhile n > 0 do\n  n = n - 1\nend",
+    "options": [
+      "while n > 0: n = n - 1",
+      "while (n > 0) { n = n - 1 }",
+      "while n > 0 do n = n - 1 end",
+      "while do n > 0 then n = n - 1"
+    ],
+    "answer": 2,
+    "explanation": "while <cond> do ... end. do is required, block ends with end. Used for retries, e.g. waiting for an LSP client to attach.",
+    "difficulty": "simple"
+  },
+  {
+    "qid": "204",
+    "topic_id": 2,
+    "question": "What is special about repeat-until vs while? (Python has neither)",
+    "code": "local n = 0\nrepeat\n  n = n + 1\nuntil n >= 3\nprint(n)",
+    "options": [
+      "It never runs if the condition is false at start",
+      "Body always runs at least once; condition is checked at the bottom",
+      "It needs a do keyword: repeat do ... until",
+      "It prints 0 because until means 'while'"
+    ],
+    "answer": 1,
+    "explanation": "repeat ... until checks at the bottom, so it runs >= 1 time. until is the STOP condition (loop ends when true). No do keyword. Prints 3.",
+    "difficulty": "intermediate"
+  },
+  {
+    "qid": "205",
+    "topic_id": 2,
+    "question": "How many times does this print? Watch out, Python range() excludes the end.",
+    "code": "for i = 1, 5 do\n  print(i)\nend",
+    "options": [
+      "4 times (1..4, like range(1, 5))",
+      "5 times (1..5 inclusive)",
+      "6 times (0..5)",
+      "Infinite loop"
+    ],
+    "answer": 1,
+    "explanation": "Numeric for includes BOTH bounds: 1,2,3,4,5. Python range(1,5) gives 1..4 — off-by-one trap when porting loops. Step form: for i = 10, 1, -1 do.",
+    "difficulty": "intermediate"
+  },
+  {
+    "qid": "206",
+    "topic_id": 2,
+    "question": "You have plugins = {\"a\", \"b\", \"c\"}. Which loop iterates it in order?",
+    "code": "local plugins = {\"a\", \"b\", \"c\"}",
+    "options": [
+      "for k, v in pairs(plugins) do (ordered)",
+      "for i, v in ipairs(plugins) do (in order 1..n)",
+      "for v in plugins do",
+      "for i = 0, #plugins do (starts at 0)"
+    ],
+    "answer": 1,
+    "explanation": "ipairs iterates array part 1..n in order (like enumerate). pairs covers all keys but unordered. Note Lua arrays start at 1, not 0.",
+    "difficulty": "intermediate"
+  },
+  {
+    "qid": "207",
+    "topic_id": 2,
+    "question": "Does Lua have a continue statement like Python?",
+    "code": "for i = 1, 5 do\n  if i == 3 then continue end\n  print(i)\nend",
+    "options": [
+      "Yes, skips to next iteration",
+      "No — continue is a syntax error; only break exists",
+      "Yes, but spelled as next",
+      "No, loops cannot be skipped at all"
+    ],
+    "answer": 1,
+    "explanation": "Only break exists. continue fails to parse and init.lua won't load. Use goto ::continue::, invert the if, or move the body into a function and return early.",
+    "difficulty": "intermediate"
+  },
+  {
+    "qid": "208",
+    "topic_id": 2,
+    "question": "Which snippet correctly skips \"skip\" using the goto-continue idiom?",
+    "code": "for _, f in ipairs({\"a\", \"skip\", \"b\"}) do\n  -- skip \"skip\"\nend",
+    "options": [
+      "if f == \"skip\" then goto continue end print(f) ::continue::",
+      "if f == \"skip\" then continue end print(f)",
+      "if f == \"skip\" then break continue end print(f)",
+      "goto continue print(f) ::continue:: if true"
+    ],
+    "answer": 0,
+    "explanation": "goto continue jumps to ::continue:: at loop bottom, skipping the rest. Label must be in the loop body scope. Often cleaner to invert: if f ~= \"skip\" then print(f) end.",
+    "difficulty": "advanced"
+  },
+  {
+    "qid": "209",
+    "topic_id": 2,
+    "question": "What does this print, and what is the trap? (Python: \"a\" if cond else \"b\")",
+    "code": "local cond = true\nlocal x = cond and nil or \"fallback\"\nprint(x)",
+    "options": [
+      "nil (middle value kept)",
+      "Error: and/or cannot be used for assignment",
+      "\"fallback\" — middle falsy value is lost, idiom only safe for truthy middles",
+      "true"
+    ],
+    "answer": 2,
+    "explanation": "cond and A or B works like a ternary ONLY when A is truthy. true and nil -> nil, nil or fallback -> fallback. If A can be false/nil, use a real if/else.",
+    "difficulty": "advanced"
+  },
+  {
+    "qid": "210",
+    "topic_id": 2,
+    "question": "Which logical operators are valid Lua? (Python: not / and / or)",
+    "code": "if not ok and retry or abort then print(\"x\") end",
+    "options": [
+      "! ok && retry || abort",
+      "not ok and retry or abort",
+      "NOT ok AND retry OR abort",
+      "~ok & retry | abort"
+    ],
+    "answer": 1,
+    "explanation": "Lua uses lowercase words not/and/or. !, &&, || are syntax errors. Same words as Python but different precedence — parenthesize complex guards in init.lua.",
+    "difficulty": "simple"
+  },
+  {
+    "qid": "301",
+    "topic_id": 3,
+    "question": "What does {} create in Lua? (Python has list vs dict)",
+    "code": "local a = {\"x\", \"y\"}\nlocal b = { name = \"n\", n = 1 }",
+    "options": [
+      "a is a list, b is an error — different literals needed",
+      "Both are tables; a uses array part, b uses hash part",
+      "a is a tuple, b is a dict",
+      "Both are sets"
+    ],
+    "answer": 1,
+    "explanation": "One table type serves as array + dict + object. Neovim setup({ ... }) and plugin specs exploit this — nested tables everywhere.",
+    "difficulty": "simple"
+  },
+  {
+    "qid": "302",
+    "topic_id": 3,
+    "question": "What happens reading a missing key? Compare to Python dict.",
+    "code": "local opts = {}\nprint(opts.border)\n-- Python: {}[\"border\"] raises KeyError",
+    "options": [
+      "KeyError like Python",
+      "Returns nil, no error",
+      "Returns empty string",
+      "Syntax error at load"
+    ],
+    "answer": 1,
+    "explanation": "Missing key is nil, so `if opts.border then` is a safe existence check. Only fails when you chain: opts.ui.border with opts.ui == nil errors.",
+    "difficulty": "simple"
+  },
+  {
+    "qid": "303",
+    "topic_id": 3,
+    "question": "What are t[1], #t, t[#t] here? (Python: t[0], len(t), t[-1])",
+    "code": "local t = {\"a\", \"b\", \"c\"}\nprint(t[1], #t, t[#t])",
+    "options": [
+      "\"a\" 3 \"c\"",
+      "\"b\" 3 \"c\"",
+      "\"a\" 2 \"b\"",
+      "nil 3 nil"
+    ],
+    "answer": 0,
+    "explanation": "1-based: first is t[1], length #t == 3, last is t[#t]. t[0] and t[-1] are nil — no negative indexing.",
+    "difficulty": "simple"
+  },
+  {
+    "qid": "304",
+    "topic_id": 3,
+    "question": "ipairs vs pairs — which is true?",
+    "code": "local t = {\"a\", \"b\", lang = \"lua\"}\n-- A: for i, v in ipairs(t) ...\n-- B: for k, v in pairs(t) ...",
+    "options": [
+      "ipairs covers all keys in order; pairs only arrays",
+      "ipairs covers array part 1..n in order; pairs covers all keys unordered",
+      "Both are identical, pairs is deprecated",
+      "ipairs is for strings, pairs is for numbers"
+    ],
+    "answer": 1,
+    "explanation": "ipairs = ordered array walk (stops at first nil), pairs = whole table unordered (like .items() over everything). Plugin lists -> ipairs; option tables -> pairs.",
+    "difficulty": "intermediate"
+  },
+  {
+    "qid": "305",
+    "topic_id": 3,
+    "question": "Which appends and joins correctly?",
+    "code": "local t = {\"a\", \"b\"}\n-- goal: {\"a\", \"b\", \"c\"} then \"a, b, c\"",
+    "options": [
+      "t.append(\"c\"); \", \".join(t)",
+      "table.insert(t, \"c\"); table.concat(t, \", \")",
+      "t += [\"c\"]; t.join(\", \")",
+      "push(t, \"c\"); concat(t)"
+    ],
+    "answer": 1,
+    "explanation": "table.insert(t, v) appends (t[#t+1] = v works too). table.concat(t, sep) joins like sep.join. table.remove(t) pops; table.sort(t) sorts in place.",
+    "difficulty": "intermediate"
+  },
+  {
+    "qid": "306",
+    "topic_id": 3,
+    "question": "This setup call fails. Why?",
+    "code": "local opts = {}\nprint(opts.ui.border)",
+    "options": [
+      "opts is nil",
+      "opts.ui is nil, indexing nil errors — guard it",
+      "border must be accessed as opts[border]",
+      ".border is private in Lua"
+    ],
+    "answer": 1,
+    "explanation": "Missing leaf is fine (nil), but indexing THROUGH nil errors: attempt to index nil. Fix: (opts.ui or {}).border or check `if opts.ui and opts.ui.border then`.",
+    "difficulty": "intermediate"
+  },
+  {
+    "qid": "307",
+    "topic_id": 3,
+    "question": "What does this print? (Same aliasing as Python lists)",
+    "code": "local a = { x = 1 }\nlocal b = a\nb.x = 99\nprint(a.x)",
+    "options": [
+      "1 (b is a copy)",
+      "99 (b shares the same table)",
+      "nil (assignment detached it)",
+      "Error: tables are immutable"
+    ],
+    "answer": 1,
+    "explanation": "Tables are references. Copy with a loop, vim.deepcopy(a), or merge defaults via vim.tbl_deep_extend(\"force\", {}, defaults, user).",
+    "difficulty": "intermediate"
+  },
+  {
+    "qid": "308",
+    "topic_id": 3,
+    "question": "What is risky about this table?",
+    "code": "local t = { 1, 2, nil, 4 }\nprint(#t)\nfor i, v in ipairs(t) do print(i, v) end",
+    "options": [
+      "Nothing, #t is 4 and ipairs prints all",
+      "Hole at [3]: #t undefined and ipairs stops early — use table.remove, not t[i]=nil, in arrays",
+      "nil is not allowed in tables at all",
+      "ipairs skips nils and continues"
+    ],
+    "answer": 1,
+    "explanation": "Arrays must stay gap-free. Deleting from an array: table.remove(t, i). Setting dict keys to nil (t.k = nil) to clear them IS correct.",
+    "difficulty": "advanced"
+  },
+  {
+    "qid": "309",
+    "topic_id": 3,
+    "question": "What does this metatable do?",
+    "code": "local o = setmetatable({}, { __index = { theme = \"dark\" } })\nprint(o.theme)",
+    "options": [
+      "Prints nil — defaults must be copied manually",
+      "Prints \"dark\" via __index fallback for missing keys",
+      "Error: __index only works on strings",
+      "Prints the metatable itself"
+    ],
+    "answer": 1,
+    "explanation": "__index is consulted when a key is missing — the mechanism behind plugin default-merging. Recursive version: vim.tbl_deep_extend. Python analog: ChainMap.",
+    "difficulty": "advanced"
+  },
+  {
+    "qid": "310",
+    "topic_id": 3,
+    "question": "Which is a valid lazy.nvim-style plugin list?",
+    "code": "-- plugins.lua returns this",
+    "options": [
+      "return { { \"telescope.nvim\", lazy = false }, { \"treesitter\" } }",
+      "plugins.add(\"telescope\"); plugins.add(\"treesitter\")",
+      "[\"telescope\", \"treesitter\"]",
+      "{ plugin: telescope, plugin: treesitter }"
+    ],
+    "answer": 0,
+    "explanation": "lazy.nvim takes an array of tables/strings; per-plugin fields (lazy, opts, keys, config) are just table keys. This is plain Lua table syntax in lua/plugins/.",
+    "difficulty": "simple"
+  }
+]
